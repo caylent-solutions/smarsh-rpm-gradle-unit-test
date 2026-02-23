@@ -1,0 +1,43 @@
+// ============================================================================
+// RPM Unit Test Configuration
+// ============================================================================
+// Provides: TestNG framework, JaCoCo code coverage, unitTest task.
+// The default 'test' task runs only unit tests (excludes integration tests).
+// ============================================================================
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+test {
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+    useTestNG()
+    // Exclude integration tests from the default test task
+    exclude '**/integration/**'
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        csv.required = true
+        html.required = true
+    }
+}
+
+// Dedicated unitTest task (alias for test with integration exclusion)
+task unitTest(type: Test) {
+    group = 'verification'
+    description = 'Run unit tests only (excludes integration tests)'
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+    useTestNG()
+    exclude '**/integration/**'
+    finalizedBy jacocoTestReport
+}
